@@ -1,11 +1,13 @@
 {% extends checkout_template_name %}
 
+{% load i18n %}
+
 {% block checkout-content %}
 <div class="checkout-receipt">
-	<h3>Order Receipt <a class="print-link button" target="_blank" href="{% url 'sales_print_receipt' order.id order.receipt_code %}">Print</a></h3>
+	<h3>{% trans 'Order Receipt' %} <a class="print-link button" target="_blank" href="{% url 'sales_print_receipt' order.id order.receipt_code %}">{% trans 'Print' %}</a></h3>
 	{% if order_confirmed %}
 	<p class="success-message-box">
-		Your order has been placed successfully, thank you for the order.
+		{% trans 'Your order has been placed successfully, thank you for the order.' %}
 	</p>
 	{% endif %}
 	{% include "sales/parts/receipt.html" %}

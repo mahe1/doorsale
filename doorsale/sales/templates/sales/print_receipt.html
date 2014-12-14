@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load staticfiles %}
 {% load pipeline %}
 
@@ -8,7 +9,7 @@
 		<meta name="copyright" content="{{ COPYRIGHT }}"/>
 		<meta name="description" content="{{ page_description|default:SITE_DESCRIPTION }}"/>
 
-		<title>Order #{{ order.id }} | {{ SITE_NAME }}</title>
+		<title>{% trans 'Order' %} #{{ order.id }} | {{ SITE_NAME }}</title>
 		<link rel="icon shortcut" href="{% static 'img/icon.png' %}" type="image/png"/>
 		{% stylesheet 'sales' %}
 	</head>

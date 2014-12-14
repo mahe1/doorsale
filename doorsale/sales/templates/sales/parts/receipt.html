@@ -1,14 +1,15 @@
+{% load i18n %}
 {% load catalog_filters %}
 <div class="receipt">
 	<ul>
 		<li>
-			<label>Order #{{ order.id }}</label>
+			<label>{% trans 'Order' %} #{{ order.id }}</label>
 		</li>
 		<li>
-			Date: {{ order.created_on|date:"l, M j, Y" }}
+			{% trans 'Date:' %} {{ order.created_on|date:"l, M j, Y" }}
 		</li>
 		<li>
-			Status: {{ order.get_order_status }}
+			{% trans 'Status:' %} {{ order.get_order_status }}
 		</li>
 		<li class="addresses">
 			{% with address=order.billing_address address_name="Billing Address" %}
@@ -21,7 +22,7 @@
 			{% endif %}
 		</li>
 		<li class="payment-method">
-			<h3>Payment Method: <b>{{ order.payment_method.name }}</b></h3>
+			<h3>{% trans 'Payment Method:' %}' <b>{{ order.payment_method.name }}</b></h3>
 		</li>
 		<li>
 			<div class="cart">
@@ -30,9 +31,9 @@
 				<table class="cart-items">
 					<thead>
 						<th>Product{{ items|pluralize }}</th>
-						<th>Price</th>
-						<th>Quantity</th>
-						<th>Sub-Total</th>
+						<th>{% trans 'Price' %}</th>
+						<th>{% trans 'Quantity' %}</th>
+						<th>{% trans 'Sub-Total' %}</th>
 					</thead>
 					<tbody>
 						{% for item in items %}
@@ -56,19 +57,19 @@
 					<div class="cart-total">
 						<table>
 							<tr>
-								<td><label>Sub-Total:</label></td>
+								<td><label>{% trans 'Sub-Total:' %}</label></td>
 								<td><span class="price">{{ order.sub_total|currency:order.currency }}</span></td>
 							</tr>
 							<tr>
-								<td><label>Shipping:</label></td>
+								<td><label>{% trans 'Shipping:' %}</label></td>
 								<td><span class="price">{{ order.shipping_cost|currency:order.currency }}</span></td>
 							</tr>
 							<tr>
-								<td><label>Tax:</label></td>
+								<td><label>{% trans 'Tax:' %}</label></td>
 								<td><span class="price">{{ order.taxes|currency:order.currency }}</span></td>
 							</tr>
 							<tr>
-								<td><label>Total:</label></td>
+								<td><label>{% trans 'Total:' %}</label></td>
 								<td><span class="price total">{{ order.total|currency:order.currency }}</span></td>
 							</tr>
 						</table>
@@ -76,7 +77,7 @@
 				</div>
 				{% else %}
 				<div class="no-items" >
-					You have no items in your shopping cart.
+					{% trans 'You have no items in your shopping cart.' %}
 				</div>
 				{% endif %}
 				{% endwith %}

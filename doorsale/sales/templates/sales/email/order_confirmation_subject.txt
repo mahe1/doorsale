@@ -1,1 +1,2 @@
-Your Order #{{ order.id }} confirmation
+{% load i18n %}
+{% blocktrans %}Your Order #{{ order.id }} confirmation{% endblocktrans %}

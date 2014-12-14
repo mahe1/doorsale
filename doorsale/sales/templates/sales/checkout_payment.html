@@ -1,8 +1,10 @@
 {% extends checkout_template_name %}
 
+{% load i18n %}
+
 {% block checkout-content %}
 <form method="post" action="{% url 'sales_checkout_payment' %}" class="action-form">
-	<h3>Payment Method</h3>
+	<h3>{% trans 'Payment Method' %}</h3>
 	{% csrf_token %}
 	<ul>
 		{% if error %}
@@ -19,11 +21,11 @@
 		</li>
 		{% endfor %}
 		<li id="id_po_number" style="display: none;">
-			<h3>PO Number</h3>
+			<h3>{% trans 'PO Number' %}</h3>
 			<input type="text" name="po_number" value="{{ po_number|default:'' }}" placeholder="Purchase order number..."/>
 		</li>
 		<li>
-			<button>Next</button>
+			<button>{% trans 'Next' %}</button>
 		</li>
 	</ul>
 </form>

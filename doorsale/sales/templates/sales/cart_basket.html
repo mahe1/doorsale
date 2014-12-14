@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load catalog_filters %}
 
 {% with items=cart.get_items sub_total=cart.get_sub_total items_count=cart.get_items_count %}
@@ -30,7 +31,7 @@
 				<p>
 					<span class="price" title="Per unit price">{{ product.price|currency:default_currency }}</span>
 					<br />
-					<span class="quantity">Qty: {{ item.quantity }}</span>
+					<span class="quantity">{% trans 'Qty:' %}' {{ item.quantity }}</span>
 				</p>
 			</li>
 			{% endwith %}
@@ -38,13 +39,13 @@
 		</ul>
 		<div class="sub-total">
 			<p>
-				<label>Sub-Total:</label> <span class="price">{{ sub_total|currency:default_currency }}</span>
+				<label>{% trans 'Sub-Total:' %}</label> <span class="price">{{ sub_total|currency:default_currency }}</span>
 			</p>
-			<a href="{% url 'sales_checkout_cart' %}" class="button">Checkout</a>
+			<a href="{% url 'sales_checkout_cart' %}" class="button">{% trans 'Checkout' %}</a>
 		</div>
 		{% else %}
 		<div class="no-items" >
-			You have no items in your shopping cart.
+			{% trans 'You have no items in your shopping cart.' %}
 		</div>
 		{% endif %}
 	</div>

@@ -1,5 +1,6 @@
 {% extends checkout_template_name %}
 
+{% load i18n %}
 {% load catalog_filters %}
 {% load pipeline %}
 
@@ -19,7 +20,7 @@
 		{% endwith %}	
 	</div>
 	<div class="payment-method">
-		<h3>Payment Method</h3>
+		<h3>{% trans 'Payment Method' %}</h3>
 		<b>{{ payment_method }}</b>
 	</div>
 	<div class="cart">
@@ -27,10 +28,10 @@
 		{% if items %}
 		<table class="cart-items">
 			<thead>
-				<th>Product{{ items|pluralize }}</th>
-				<th>Price</th>
-				<th>Quantity</th>
-				<th>Sub-Total</th>
+				<th>{% trans 'Product' %}{{ items|pluralize }}</th>
+				<th>{% trans 'Price' %}</th>
+				<th>{% trans 'Quantity' %}</th>
+				<th>{% trans 'Sub-Total' %}</th>
 			</thead>
 			<tbody>
 				{% for item in items %}
@@ -45,7 +46,7 @@
 						<br/>
 						<span class="old-price">{{ product.price|currency:default_currency }}</span>
 						<br/>
-						<span class="discount">{{ product.get_discount }}% OFF</span> {% endif %} </span></td>
+						<span class="discount">{{ product.get_discount }}% {% trans 'OFF' %}</span> {% endif %} </span></td>
 					<td><span>{{ item.quantity }}</span>
 					<td><span class="total price">{{ item.get_sub_total|currency:default_currency }}</span></td>
 				</tr>
@@ -57,19 +58,19 @@
 			<div class="cart-total">
 				<table>
 					<tr>
-						<td><label>Sub-Total:</label></td>
+						<td><label>{% trans 'Sub-Total:' %}</label></td>
 						<td><span class="price">{{ cart.get_sub_total|currency:default_currency }}</span></td>
 					</tr>
 					<tr>
-						<td><label>Shipping:</label></td>
+						<td><label>{% trans 'Shipping:' %}</label></td>
 						<td><span class="price">{{ cart.get_shipping_cost|currency:default_currency }}</span></td>
 					</tr>
 					<tr>
-						<td><label>Tax:</label></td>
+						<td><label>{% trans 'Tax:' %}</label></td>
 						<td><span class="price">{{ cart.get_taxes|currency:default_currency }}</span></td>
 					</tr>
 					<tr>
-						<td><label>Total:</label></td>
+						<td><label>{% trans 'Total:' %}</label></td>
 						<td><span class="price total">{{ cart.get_total|currency:default_currency }}</span></td>
 					</tr>
 				</table>
@@ -79,13 +80,13 @@
 			<form method="post" {% if payment_method == 'Credit Card' %}data-ajax="true"{% endif %} action="{% url 'sales_checkout_order' %}" data-ajax-update="#payment-options-container" data-ajax-success="showPaymentOptions();">
 				{% csrf_token %}
 				<a title="Placed order" class="button checkout" onclick="javascript:$(this).closest('form').submit();">
-					<i class="fa fa-legal"></i>Place Order
+					<i class="fa fa-legal"></i>{% trans 'Place Order' %}
 				</a>
 			</form>
 		</div>
 		{% else %}
 		<div class="no-items" >
-			You have no items in your shopping cart.
+			{% trans 'You have no items in your shopping cart.' %}
 		</div>
 		{% endif %}
 		{% endwith %}

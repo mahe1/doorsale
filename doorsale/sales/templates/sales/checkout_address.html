@@ -1,5 +1,7 @@
 {% extends checkout_template_name %}
 
+{% load i18n %}
+
 {% block checkout-content %}
 <div class="action-form">
     <form method="post" action="{% url current_step %}">
@@ -27,14 +29,14 @@
                         <label>{{ address.email }}</label>
                     </li>
                     <li>
-                        <button onclick="javascript:$('#address_id').val('{{ address.id }}');">Next</button>
+                        <button onclick="javascript:$('#address_id').val('{{ address.id }}');">{% trans 'Next' %}</button>
                     </li>
                 </ul>
             </div>
             {% endfor %}
         </div>
         {% endif %}
-        <h3>Add new address</h3>
+        <h3>{% trans 'Add new address' %}</h3>
         <div class="new-address">
             <div>
                 <ul>
@@ -91,12 +93,12 @@
                             {% for state in form.get_states %}
                             <option country="{{ state.country_id }}" value="{{ state.id }}" {% if state_id == state.id %}selected="selected"{% endif %}>{{ state.name }}</option>
                             {% endfor %}
-                            <option value="">Other</option>
+                            <option value="">{% trans 'Other' %}</option>
                         </select>
                         {{ form.state.errors }}
                     </li>
                     <li>
-                        <button>Next</button>
+                        <button>{% trans 'Next' %}</button>
                     </li>
                 </ul>
             </div>
