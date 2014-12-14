@@ -1,8 +1,10 @@
 {% extends catalog_template_name %}
 
+{% load i18n %}
+
 {% block catalog-content %}
 <div>
-    <h3>Payment Transaction</h3>
+    <h3>{% trans 'Payment Transaction' %}</h3>
     {% if error %}
     <div class="error-message-box">
         {{ error }}

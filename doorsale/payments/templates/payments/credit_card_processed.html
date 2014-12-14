@@ -1,11 +1,13 @@
+{% load i18n %}
+
 <div class="credit-card-processed">
     <p class="info-message-box">
         <i class="fa fa-credit-card"></i>
-        Your credit card has been processed successfully. redirecting<span id="dots" class="text"></span>
+        {% trans 'Your credit card has been processed successfully. redirecting' %}<span id="dots" class="text"></span>
     </p>
     <p>
         <br/>   
-        <a id="a-order-receipt" href="{% url 'sales_checkout_receipt' order.id order.receipt_code %}" style="display: none;">View your order receipt here...</a>
+        <a id="a-order-receipt" href="{% url 'sales_checkout_receipt' order.id order.receipt_code %}" style="display: none;">{% trans 'View your order receipt here...' %}</a>
     </p>
 </div>
 <script type="text/javascript">
