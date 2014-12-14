@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load staticfiles %}
 {% load pipeline %}
 {% load pages_tags %}
@@ -37,14 +38,14 @@
 			<ul id="menu">
 				{% block header-menu-list %}
 				{% if user.is_authenticated %}
-				<li>Welcome! {{ user.get_username }}</li>
+				<li>{% trans 'Welcome!' %} {{ user.get_username }}</li>
 				{% if user.is_staff %}
-				<li><a href="/admin/">Admin</a></li>
+				<li><a href="/admin/">{% trans 'Admin' %}</a></li>
 				{% endif %}
-				<li><a href="{% url 'accounts_change_password' %}">Change password</a> | <a href="{% url 'accounts_logout' %}">Logout</a></li>
+				<li><a href="{% url 'accounts_change_password' %}">{% trans 'Change password' %}</a> | <a href="{% url 'accounts_logout' %}">{% trans 'Logout' %}</a></li>
 				{% else %}
-				<li><a href="{% url 'accounts_login' %}">Login</a></li>
-				<li><a href="{% url 'accounts_register' %}" title="Register to shop faster and better!">Register</a></li>
+				<li><a href="{% url 'accounts_login' %}">{% trans 'Login' %}</a></li>
+				<li><a href="{% url 'accounts_register' %}" title="Register to shop faster and better!">{% trans 'Register' %}</a></li>
 				{% endif %}
 				{% endblock %}
 			</ul>
@@ -59,7 +60,7 @@
 			{% get_pages_links %}
 			<div class="copyright">
 				<p>
-					<span class="statement">{{ COPYRIGHT|safe }}</span> <span class="poweredby">Powered by <a href="https://github.com/mysteryjeans/doorsale">Doorsale</a></span>
+					<span class="statement">{{ COPYRIGHT|safe }}</span> <span class="poweredby">{% trans 'Powered by' %} <a href="https://github.com/mysteryjeans/doorsale">Doorsale</a></span>
 				<p>
 			</div>
 			{% endblock %}
