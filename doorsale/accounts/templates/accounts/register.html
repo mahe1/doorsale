@@ -1,5 +1,7 @@
 {% extends "catalog/catalog_base.html" %}
 
+{% load i18n %}
+
 {% block catalog-content %}
 <div class="action-form register">
 	<form method="post" action="{% url 'accounts_register' %}">
@@ -10,7 +12,7 @@
 			{{ success|safe }}
 		</div>
 		{% else %}
-		<h3>Login details</h3>
+		<h3>{% trans 'Login details' %}</h3>
 		<ul>
 			<li>
 				{{ form.username }}
@@ -25,7 +27,7 @@
 				{{ form.confirm_password.errors }}
 			</li>
 		</ul>
-		<h3>Peronsal details</h3>
+		<h3>{% trans 'Peronsal details' %}</h3>
 		<ul>
 			<li>
 				{{ form.email }}
