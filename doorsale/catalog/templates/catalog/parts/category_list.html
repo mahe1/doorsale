@@ -1,9 +1,11 @@
+{% load i18n %}
+
 {% if category.sub_categories_list %}
 <li class="parent-category-container">
 	<a id="parent-category-id-{{ category.id }}" class="parent-category">{{ category.name }}</a>
 	{% if category.sub_categories_list %}
 	<ul class="sub-categories" parent-category="#parent-category-id-{{ category.id }}">
-		<li><a id="category-id-{{ category.id }}" href="{{ category.get_absolute_url }}">all...</a></li>
+		<li><a id="category-id-{{ category.id }}" href="{{ category.get_absolute_url }}">{% trans 'all...' %}</a></li>
 		{% for category in category.sub_categories_list %}
 		{% include template_name %}
 		{% endfor %}

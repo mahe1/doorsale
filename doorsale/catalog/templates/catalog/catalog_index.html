@@ -1,14 +1,16 @@
 {% extends catalog_template_name %}
 
+{% load i18n %}
+
 {% block catalog-content %}
 <div style="clear: both; overflow: hidden;">
-	<h3>Featured</h3>
+	<h3>{% trans 'Featured' %}</h3>
 	{% with products=featured_products %}
 	{% include "catalog/parts/products_list.html" %}
 	{% endwith %}
 </div>
 <div style="clear: both; overflow: hidden; margin-top: 20px;">
-	<h3>New Arrivals</h3>
+	<h3>{% trans 'New Arrivals' %}</h3>
 	{% with products=recent_products %}
 	{% include "catalog/parts/products_list.html" %}
 	{% endwith %}

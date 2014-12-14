@@ -1,5 +1,6 @@
 {% extends base_template_name %}
 
+{% load i18n %}
 {% load cart %}
 {% load pipeline %}
 
@@ -20,14 +21,14 @@
 <div id="categories-sidebar">
 	<ul id="categories">
 		<li>
-			<h5>Categories</h5>
+			<h5>{% trans 'Categories' %}</h5>
 		</li>
 		{% with template_name="catalog/parts/category_list.html" %}
 		{% for category in categories %}
 		{% include template_name %}
 		{% empty %}
 		<li class="info-message-box no-categories-msg">
-			There are no categories defined.
+			{% trans 'There are no categories defined.' %}
 		</li>
 		{% endfor %}
 		{% endwith %}
@@ -35,7 +36,7 @@
 	{% if manufacturers %}
 	<ul id="manufacturers">
 		<li>
-			<h5>Manufacturers</h5>
+			<h5>{% trans 'Manufacturers' %}</h5>
 		</li>
 		{% for manufacturer in manufacturers %}
 		<li>
