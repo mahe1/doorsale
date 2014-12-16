@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.utils.translation import ugettext as _
 
 from doorsale.views import BaseView
 from doorsale.pages.models import Page
