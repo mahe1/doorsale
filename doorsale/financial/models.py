@@ -2,21 +2,21 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.core.exceptions import ValidationError, ImproperlyConfigured
-
+from django.utils.translation import ugettext_lazy as _
 
 class Currency(models.Model):
     """
     Represents a currency
     """
     name = models.CharField(max_length=100, unique=True)
-    code = models.CharField(max_length=3, unique=True, help_text="ISO Currency Code")
+    code = models.CharField(max_length=3, unique=True, help_text=_("ISO Currency Code"))
     exchange_rate = models.FloatField(default=1.0)
     locale = models.CharField(max_length=10, blank=True)
     display_format = models.CharField(
-        max_length=50, help_text='Display format: 1.2 => "${0:,.2f}".format(price) => $1.20 (python format string)')
+        max_length=50, help_text=_('Display format: 1.2 => "${0:,.2f}".format(price) => $1.20 (python format string)'))
     is_primary = models.BooleanField(
-        default=False, help_text='Default currency of prices & costs. When you change primary currency,'
-                                 ' make sure to update exchange rates, prices & costs.')
+        default=False, help_text=_('Default currency of prices & costs. When you change primary currency,'
+                                 ' make sure to update exchange rates, prices & costs.'))
     is_active = models.BooleanField(default=False)
     updated_by = models.CharField(max_length=100)
     updated_on = models.DateTimeField(auto_now=True)
@@ -25,7 +25,7 @@ class Currency(models.Model):
 
     class Meta:
         ordering = ('id',)
-        verbose_name_plural = 'Currencies'
+        verbose_name_plural = _('Currencies')
 
     def __unicode__(self):
         return self.name
@@ -34,16 +34,16 @@ class Currency(models.Model):
         if self.is_primary:
 
             if not self.is_active:
-                raise ValidationError('Cannot inactive primary currency.')
+                raise ValidationError(_('Cannot inactive primary currency.'))
 
             if self.exchange_rate != 1:
-                raise ValidationError('Primary should have exchange rate of 1. '
-                                      'All prices & cost should be defined in primary currency value.')
+                raise ValidationError(_('Primary should have exchange rate of 1. '
+                                      'All prices & cost should be defined in primary currency value.'))
 
             try:
                 primary_currency = type(self).objects.get(is_primary=True)
                 if self.id != primary_currency.id:
-                    raise ValidationError('"%s" is already defined as primary currency.' % unicode(primary_currency))
+                    raise ValidationError(_('"%s" is already defined as primary currency.') % unicode(primary_currency))
             except type(self).DoesNotExist:
                 pass
 
@@ -55,7 +55,7 @@ class Currency(models.Model):
         try:
             return cls.objects.get(is_active=True, is_primary=True)
         except cls.DoesNotExist:
-            raise ImproperlyConfigured('Primary currency not defined in the system.')
+            raise ImproperlyConfigured(_('Primary currency not defined in the system.'))
 
     @classmethod
     def get_currencies(cls):
@@ -69,13 +69,13 @@ class Tax(models.Model):
     """
     TAX_PERCENTAGE = 'PE'
     TAX_FIXED = 'FI'
-    TAX_METHODS = ((TAX_PERCENTAGE, 'Percentage'),
-                   (TAX_FIXED, 'Fixed'))
+    TAX_METHODS = ((TAX_PERCENTAGE, _('Percentage')),
+                   (TAX_FIXED, _('Fixed')))
 
     name = models.CharField(max_length=100, unique=True)
     method = models.CharField(
         max_length=2, choices=TAX_METHODS,
-        help_text='Tax deduction method: fixed tax per product or percentage (in fraction) of price per product')
+        help_text=_('Tax deduction method: fixed tax per product or percentage (in fraction) of price per product'))
     rate = models.FloatField(default=0.0)
     updated_by = models.CharField(max_length=100)
     updated_on = models.DateTimeField(auto_now=True)
@@ -84,7 +84,7 @@ class Tax(models.Model):
 
     class Meta:
         db_table = 'financial_tax'
-        verbose_name_plural = 'Taxes'
+        verbose_name_plural = _('Taxes')
 
     def __unicode__(self):
         return '%s [%s]: %s' % (self.name, self.method, self.rate)
@@ -113,6 +113,6 @@ class Tax(models.Model):
             return float(rate) * float(quantity) * float(price)
 
         if name:
-            raise Exception('Unknown tax method "%s" defined for tax rate: "%s"' % (method, name))
+            raise Exception(_('Unknown tax method "%s" defined for tax rate: "%s"') % (method, name))
 
-        raise Exception('Unknown tax method "%s"' % method)
+        raise Exception(_('Unknown tax method "%s"') % method)
