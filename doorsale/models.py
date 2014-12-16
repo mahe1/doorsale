@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.core.exceptions import ImproperlyConfigured
 
@@ -21,8 +22,8 @@ class SysConfig(models.Model):
 
     class Meta:
         db_table = 'doorsale_sys_config'
-        verbose_name = 'System Config'
-        verbose_name_plural = 'System Configs'
+        verbose_name = _('System Config')
+        verbose_name_plural = _('System Configs')
         ordering = ['id']
 
     @classmethod
@@ -34,7 +35,7 @@ class SysConfig(models.Model):
         if name in sys_configs:
             return sys_configs[name]
 
-        raise ImproperlyConfigured('"%s" does not found, it should be defined it in System Configs' % name)
+        raise ImproperlyConfigured(_('"%s" does not found, it should be defined it in System Configs') % name)
 
     @classmethod
     def get_configs(cls):
