@@ -8,7 +8,7 @@ from doorsale.views import BaseView
 from doorsale.catalog.forms import AdvancedSearchForm
 from doorsale.catalog.models import Manufacturer, Category, Product
 from doorsale.financial.models import Currency
-
+from django.utils.translation import ugettext as _
 
 class CatalogBaseView(BaseView):
     """
@@ -27,13 +27,13 @@ class CatalogBaseView(BaseView):
             (currency for currency in self.currencies if currency.is_primary), None)
 
         if self.primary_currency is None:
-            raise ImproperlyConfigured('No primary currency is defined for Doorsale.'
+            raise ImproperlyConfigured(_('No primary currency is defined for Doorsale.'
                                        ' You should defined primary currency for the system with exchange rate of 1.'
-                                       ' All prices & costs should be defined in primary currency value.')
+                                       ' All prices & costs should be defined in primary currency value.'))
 
         if self.primary_currency.exchange_rate != 1:
-            raise ImproperlyConfigured('Primary currency should have exchange rate of 1.'
-                                       ' All prices & costs should be defined in primary currency value.')
+            raise ImproperlyConfigured(_('Primary currency should have exchange rate of 1.'
+                                       ' All prices & costs should be defined in primary currency value.'))
 
     def get_context_data(self, **kwargs):
         context = super(CatalogBaseView, self).get_context_data(**kwargs)
@@ -230,3 +230,4 @@ def paginate(query_set, page_size, page_num, url_name, url_args=[], qs=None):
         page.next_url = reverse(url_name, args=(url_args + [next_page_num])) + (qs or '')
 
     return page
+    
