@@ -18,6 +18,7 @@ from doorsale.decorators import anonymous_required
 from doorsale.catalog.views import CatalogBaseView
 from doorsale.accounts.forms import RegisterForm, PasswordResetForm, ChangePasswordForm
 from doorsale.utils.helpers import send_mail
+from django.utils.translation import ugettext as _
 
 
 User = get_user_model()
@@ -44,10 +45,10 @@ class LoginView(CatalogBaseView):
                 login(request, user)
                 return HttpResponseRedirect(request.POST.get('next', reverse('catalog_index')))
             else:
-                error = ('Your account has been disabled. We apologize for any inconvenience! If this is a mistake'
+                error = _('Your account has been disabled. We apologize for any inconvenience! If this is a mistake'
                          ' please contact our <a href="mailto:%s">support</a>.') % settings.SUPPORT_EMAIL
         else:
-            error = ('Username and password didn\'t matched, if you forgot your password?'
+            error = _('Username and password didn\'t matched, if you forgot your password?'
                      ' <a href="%s">Request new one</a>') % reverse('accounts_forgot_password')
 
         return super(LoginView, self).get(request, error=error)
@@ -67,7 +68,7 @@ class RegisterView(CatalogBaseView):
     """
     User registration view
     """
-    page_title = 'Register'
+    page_title = _('Register')
     template_name = "accounts/register.html"
     decorators = [transaction.atomic, anonymous_required]
 
@@ -100,7 +101,7 @@ class RegisterView(CatalogBaseView):
                 if next_url:
                     return HttpResponseRedirect(next_url)
 
-                success = ('You have register successfully, please continue to browse our'
+                success = _('You have register successfully, please continue to browse our'
                            ' <a href="%s">catalog</a>.') % reverse('catalog_index')
             except ValidationError as e:
                 error = e.message
@@ -114,7 +115,7 @@ class ForgotPasswordView(CatalogBaseView):
     """
     template_name = 'accounts/forgot_password.html'
     decorators = [anonymous_required]
-    page_title = 'Forgot password'
+    page_title = _('Forgot password')
 
     def get_context_data(self, **kwargs):
         context = super(ForgotPasswordView, self).get_context_data(**kwargs)
@@ -140,7 +141,7 @@ class ForgotPasswordView(CatalogBaseView):
                 to_email = '%s <%s>' % (user.get_full_name(), user.email)
                 send_mail(msg_subject, msg_text, [to_email], True)
 
-                success = 'Password reset intructions has been sent to your email address.'
+                success = _('Password reset intructions has been sent to your email address.')
             except DoorsaleError as e:
                 error = e.message
 
@@ -151,7 +152,7 @@ class PasswordResetView(CatalogBaseView):
     """
     Password recovery view
     """
-    page_title = 'Password reset'
+    page_title = _('Password reset')
     template_name = 'accounts/password_reset.html'
     decorators = [anonymous_required]
 
@@ -176,7 +177,7 @@ class PasswordResetView(CatalogBaseView):
             data = form.cleaned_data
             try:
                 User.objects.reset_password(user_id, reset_code, data['password'])
-                success = 'Your password has been reset successfully.'
+                success = _('Your password has been reset successfully.')
             except DoorsaleError as e:
                 error = e.message
 
@@ -188,7 +189,7 @@ class ChangePasswordView(CatalogBaseView):
     """
     Password recovery view
     """
-    page_title = 'Change password'
+    page_title = _('Change password')
     template_name = 'accounts/change_password.html'
     decorators = [login_required]
 
@@ -210,7 +211,7 @@ class ChangePasswordView(CatalogBaseView):
             data = form.cleaned_data
             try:
                 User.objects.change_password(request.user, data['current_password'], data['password'])
-                success = 'Your password has been changed successfully.'
+                success = _('Your password has been changed successfully.')
             except DoorsaleError as e:
                 error = e.message
 

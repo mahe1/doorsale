@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AbstractUser as _AbstractUser, UserManager as _UserManager
+from django.utils.translation import ugettext_lazy as _
 
 from doorsale.exceptions import DoorsaleError
 from doorsale.geo.models import Address
@@ -24,7 +25,7 @@ class UserManager(_UserManager):
             verify_code = self.make_random_password(length=20)
 
         if self.filter(email__iexact=email).count() > 0:
-            raise ValidationError("User with this Email address already exists.")
+            raise ValidationError(_("User with this Email address already exists."))
 
         # First user will automatically become super user and staff member
         if self.count() == 0:
@@ -67,7 +68,7 @@ class UserManager(_UserManager):
 
             return user
         except get_user_model().DoesNotExist:
-            raise DoorsaleError('We can\'t find that email address, sorry!')
+            raise DoorsaleError(_('We can\'t find that email address, sorry!'))
 
     def reset_password(self, user_id, reset_code, password):
         """
@@ -75,12 +76,12 @@ class UserManager(_UserManager):
         """
 
         if not password:
-            raise DoorsaleError('New password can\'t be blank.')
+            raise DoorsaleError(_('New password can\'t be blank.'))
 
         try:
             user = self.get(id=user_id)
             if not user.reset_code or user.reset_code != reset_code or user.reset_code_expire < timezone.now():
-                raise DoorsaleError('Password reset code is invalid or expired.')
+                raise DoorsaleError(_('Password reset code is invalid or expired.'))
 
             # Password reset code shouldn't be used again
             user.reset_code = None
@@ -88,7 +89,7 @@ class UserManager(_UserManager):
             user.save()
 
         except get_user_model().DoesNotExist:
-            raise DoorsaleError('Password reset code is invalid or expired.')
+            raise DoorsaleError(_('Password reset code is invalid or expired.'))
 
     def change_password(self, user, current_password, password):
         """
@@ -96,13 +97,13 @@ class UserManager(_UserManager):
         """
 
         if not password:
-            raise DoorsaleError('New password can\'t be blank.')
+            raise DoorsaleError(_('New password can\'t be blank.'))
 
         # Changing user's password if old password verifies
         user = self.get(id=user.id)
 
         if not user.check_password(current_password):
-            raise DoorsaleError('Your current password is wrong.')
+            raise DoorsaleError(_('Your current password is wrong.'))
 
         user.set_password(password)
         user.save()
@@ -112,24 +113,24 @@ class AbstractUser(_AbstractUser):
     """
     An abstract class extending Django authentication user model for Doorsale.
     """
-    MALE = 'M'
-    FEMALE = 'F'
-    GENDERS = ((MALE, 'Male'),
-               (FEMALE, 'Female'))
+    MALE = _('M')
+    FEMALE = _('F')
+    GENDERS = ((MALE, _('Male')),
+               (FEMALE, _('Female')))
 
     birth_date = models.DateField(null=True, blank=True)
     gender = models.CharField(max_length=1, choices=GENDERS, default=None)
-    billing_address = models.ForeignKey(Address, null=True, blank=True, related_name='billing_customers',
-                                        help_text='Customer default billing address')
-    shipping_adress = models.ForeignKey(Address, null=True, blank=True, related_name='shipping_customers',
-                                        help_text='Customer default shipping address')
+    billing_address = models.ForeignKey(Address, null=True, blank=True, related_name=_('billing_customers'),
+                                        help_text=_('Customer default billing address'))
+    shipping_adress = models.ForeignKey(Address, null=True, blank=True, related_name=_('shipping_customers'),
+                                        help_text=_('Customer default shipping address'))
     is_verified = models.BooleanField(default=True)
     verify_code = models.CharField(max_length=512, blank=True, null=True,
-                                   help_text='User account verification code.', editable=False)
+                                   help_text=_('User account verification code.'), editable=False)
     reset_code = models.CharField(max_length=512, blank=True, null=True,
-                                  help_text='Password reset code.', editable=False)
+                                  help_text=_('Password reset code.'), editable=False)
     reset_code_expire = models.DateTimeField(max_length=512, blank=True, null=True,
-                                             help_text='Password reset code expire date.', editable=False)
+                                             help_text=_('Password reset code expire date.'), editable=False)
     updated_on = models.DateTimeField(auto_now=True)
     updated_by = models.CharField(max_length=100)
     created_on = models.DateTimeField(auto_now_add=True)

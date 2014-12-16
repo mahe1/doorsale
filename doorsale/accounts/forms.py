@@ -1,7 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
-
+from django.utils.translation import ugettext as _
 
 # USER_AUTH_MODEL defined in settings.py
 User = get_user_model()
@@ -12,36 +12,36 @@ class RegisterForm(forms.ModelForm):
     """
     Customer registration form
     """
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Your new password...'}),
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': _('Your new password...')}),
                                min_length=8, max_length=50,
-                               error_messages={'required': 'Please enter your new password.'})
+                               error_messages={'required': _('Please enter your new password.')})
     confirm_password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'placeholder': 'Your new password again...'}),
-        max_length=50, error_messages={'required': 'Please re-enter your new password for confirmation.'})
+        widget=forms.PasswordInput(attrs={'placeholder': _('Your new password again...')}),
+        max_length=50, error_messages={'required': _('Please re-enter your new password for confirmation.')})
 
     class Meta:
         model = User
         fields = ('username', 'email', 'first_name', 'last_name', 'gender')
         widgets = {
-            'username': forms.TextInput(attrs=({'placeholder': 'Choose a new username...'})),
-            'email': forms.TextInput(attrs=({'placeholder': 'Email address...'})),
-            'first_name': forms.TextInput(attrs=({'placeholder': 'First name...'})),
-            'last_name': forms.TextInput(attrs=({'placeholder': 'Last name...'})),
+            'username': forms.TextInput(attrs=({'placeholder': _('Choose a new username...')})),
+            'email': forms.TextInput(attrs=({'placeholder': _('Email address...')})),
+            'first_name': forms.TextInput(attrs=({'placeholder': _('First name...')})),
+            'last_name': forms.TextInput(attrs=({'placeholder': _('Last name...')})),
             'gender': forms.RadioSelect(choices=User.GENDERS)
         }
         error_messages = {
-            'username': {'required': 'Please choose a username.'},
-            'gender': {'required': 'Please specify your gender.'}
+            'username': {'required': _('Please choose a username.')},
+            'gender': {'required': _('Please specify your gender.')}
         }
 
     def clean_email(self):
         email = self.cleaned_data['email']
 
         if not email:
-            raise ValidationError('Please enter you email address.')
+            raise ValidationError(_('Please enter you email address.'))
 
         if User.objects.filter(email__iexact=email).count() > 0:
-            raise ValidationError('User with this email address already exists.')
+            raise ValidationError(_('User with this email address already exists.'))
 
         return email
 
@@ -49,7 +49,7 @@ class RegisterForm(forms.ModelForm):
         first_name = self.cleaned_data['first_name']
 
         if not first_name:
-            raise ValidationError('Please enter your first name.')
+            raise ValidationError(_('Please enter your first name.'))
 
         return first_name
 
@@ -57,14 +57,14 @@ class RegisterForm(forms.ModelForm):
         last_name = self.cleaned_data['last_name']
 
         if not last_name:
-            raise ValidationError('Please enter your last name.')
+            raise ValidationError(_('Please enter your last name.'))
 
         return last_name
 
     def clean_confirm_password(self):
         confirm_password = self.cleaned_data['confirm_password']
         if 'password' in self.cleaned_data and self.cleaned_data['password'] != confirm_password:
-            raise forms.ValidationError("Your new password and confirm password didn't matched.")
+            raise forms.ValidationError(_("Your new password and confirm password didn't matched."))
         return confirm_password
 
 
@@ -73,16 +73,16 @@ class PasswordResetForm(forms.Form):
     Password reset form
     """
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'placeholder': 'New password...'}), min_length=8, max_length=50,
-        error_messages={'required': 'Please enter your new password.'})
+        widget=forms.PasswordInput(attrs={'placeholder': _('New password...')}), min_length=8, max_length=50,
+        error_messages={'required': _('Please enter your new password.')})
     confirm_password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'placeholder': 'Confirm your password...'}), max_length=50,
-        error_messages={'required': 'Please re-enter your new password for confirmation.'})
+        widget=forms.PasswordInput(attrs={'placeholder': _('Confirm your password...')}), max_length=50,
+        error_messages={'required': _('Please re-enter your new password for confirmation.')})
 
     def clean_confirm_password(self):
         confirm_password = self.cleaned_data['confirm_password']
         if 'password' in self.cleaned_data and self.cleaned_data['password'] != confirm_password:
-            raise forms.ValidationError("Your new password and confirm password didn't matched.")
+            raise forms.ValidationError(_("Your new password and confirm password didn't matched."))
         return confirm_password
 
 
@@ -91,5 +91,5 @@ class ChangePasswordForm(PasswordResetForm):
     Change password form
     """
     current_password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'placeholder': 'Current password...'}), max_length=50,
-        error_messages={'required': 'Please enter your current password.'})
+        widget=forms.PasswordInput(attrs={'placeholder': _('Current password...')}), max_length=50,
+        error_messages={'required': _('Please enter your current password.')})
