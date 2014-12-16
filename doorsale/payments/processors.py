@@ -11,6 +11,7 @@ from django.conf import settings
 from django.utils.crypto import get_random_string
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
 
 from doorsale.exceptions import DoorsaleError
 from doorsale.sales.models import Order
@@ -34,13 +35,13 @@ class PayPal:
         if 'client_id' in params and params['client_id']:
             client_id = params['client_id']
         else:
-            raise ImproperlyConfigured('"client_id" parameter not configured for PayPal gateway %s.'
+            raise ImproperlyConfigured(_('"client_id" parameter not configured for PayPal gateway %s.')
                                        % self.gateway.account)
 
         if 'client_secret' in params and params['client_secret']:
             client_secret = params['client_secret']
         else:
-            raise ImproperlyConfigured('"client_secret" parameter not configured for PayPal gateway %s.'
+            raise ImproperlyConfigured(_('"client_secret" parameter not configured for PayPal gateway %s.')
                                        % self.gateway.account)
 
         self.api = paypalrestsdk.Api({
@@ -58,7 +59,7 @@ class PayPal:
         with transaction.atomic():
             payment_txn = Transaction.objects.create(gateway=self.gateway,
                                                      order=order,
-                                                     description='Transaction for order #%s' % order.id,
+                                                     description=_('Transaction for order #%s') % order.id,
                                                      status=Transaction.STATUS_PROCESSING,
                                                      currency=order.currency.code,
                                                      amount=order.charge_amount,
@@ -106,10 +107,10 @@ class PayPal:
             payment = paypalrestsdk.Payment(payment, api=self.api)
             payment_created = payment.create()
         except Exception as e:
-            logger.error('Failed to process PayPal account (transaction_id: %s)' % payment_txn.id)
+            logger.error(_('Failed to process PayPal account (transaction_id: %s)') % payment_txn.id)
             logger.exception(e)
 
-            raise DoorsaleError('We failed to process your PayPal account at the moment, please try again later!')
+            raise DoorsaleError(_('We failed to process your PayPal account at the moment, please try again later!'))
 
         if payment_created:
             with transaction.atomic():
@@ -129,7 +130,7 @@ class PayPal:
         payment_txn.error_message = payment.error['message']
         payment_txn.save()
 
-        raise DoorsaleError('We failed to process your PayPal account at the moment, please try again later!')
+        raise DoorsaleError(_('We failed to process your PayPal account at the moment, please try again later!'))
 
     def execute_account_payment(self, payer_id, payment_txn, user):
         """
@@ -153,7 +154,7 @@ class PayPal:
                 payment_txn.error_message = payment.error['message']
                 payment_txn.save()
 
-            raise DoorsaleError('We failed to process your PayPal account at the moment, please try again later!')
+            raise DoorsaleError(_('We failed to process your PayPal account at the moment, please try again later!'))
 
     def cancel_account_payment(self, payment_txn, user):
         """
@@ -195,17 +196,17 @@ class PayPal:
                     'total': unicode(order.charge_amount),
                     'currency': order.currency.code
                 },
-                'description': 'Payment for order #%s' % (order.id)
+                'description': _('Payment for order #%s') % (order.id)
             }],
         }
 
-        logger.info('Processing Credit Card via PayPal', extra=payment)
+        logger.info(_('Processing Credit Card via PayPal'), extra=payment)
         payment = paypalrestsdk.Payment(payment, api=self.api)
 
         with transaction.atomic():
             payment_txn = Transaction.objects.create(gateway=self.gateway,
                                                      order=order,
-                                                     description='Transaction for order #%s' % order.id,
+                                                     description=_('Transaction for order #%s') % order.id,
                                                      status=Transaction.STATUS_PROCESSING,
                                                      currency=order.currency.code,
                                                      amount=order.charge_amount,
@@ -215,10 +216,10 @@ class PayPal:
         try:
             payment_created = payment.create()
         except Exception as e:
-            logger.error('Failed to process Credit Card (transaction_id: %s)' % payment_txn.id)
+            logger.error(_('Failed to process Credit Card (transaction_id: %s)') % payment_txn.id)
             logger.exception(e)
 
-            raise DoorsaleError('We failed to process your Credit Card at the moment, please try again later!')
+            raise DoorsaleError(_('We failed to process your Credit Card at the moment, please try again later!'))
 
         if payment_created:
             try:
@@ -239,11 +240,11 @@ class PayPal:
                     order.updated_by = unicode(user)
                     order.save()
             except Exception as e:
-                logger.error(('Failed to save successful Credit Card payment'
+                logger.error(_('Failed to save successful Credit Card payment'
                               ' (transaction_id: %s, payment_id: %s) in database.') % (payment_txn.id, payment.id))
                 raise e
         else:
-            logger.error('Failed to process Credit Card (transaction_id: %s)' % payment_txn.id,
+            logger.error(_('Failed to process Credit Card (transaction_id: %s)') % payment_txn.id,
                          extra={'error': payment.error})
 
             with transaction.atomic():
@@ -251,7 +252,7 @@ class PayPal:
                 payment_txn.error_message = payment.error['message']
                 payment_txn.save()
 
-            raise DoorsaleError('We failed to process your Credit Card at the moment, please try again later!')
+            raise DoorsaleError(_('We failed to process your Credit Card at the moment, please try again later!'))
 
         return payment_txn
 
@@ -272,18 +273,18 @@ class Stripe:
         try:
             api_key = gateway.params.get(name='api_key')
         except GatewayParam.DoesNotExist:
-            raise ImproperlyConfigured('"api_key" parameter not configured for Strip gateway "%s".' % self.gateway)
+            raise ImproperlyConfigured(_('"api_key" parameter not configured for Strip gateway "%s".') % self.gateway)
 
         self.api_key = api_key.value
 
         # Verifying api_key configured according to sandbox or live mode
         if gateway.is_sandbox:
             if self.api_key.startswith('sk_live'):
-                raise ImproperlyConfigured('"%s" Gateway is configured for sandbox mode but uses live "api_key".'
+                raise ImproperlyConfigured(_('"%s" Gateway is configured for sandbox mode but uses live "api_key".')
                                            % self.gateway)
         else:
             if self.api_key.startswith('sk_test'):
-                raise ImproperlyConfigured('"%s" Gateway is configured for live mode but uses test "api_key".'
+                raise ImproperlyConfigured(_('"%s" Gateway is configured for live mode but uses test "api_key".')
                                            % self.gateway)
 
         stripe.api_key = self.api_key
@@ -295,7 +296,7 @@ class Stripe:
         with transaction.atomic():
             payment_txn = Transaction.objects.create(gateway=self.gateway,
                                                      order=order,
-                                                     description='Transaction for order #%s' % order.id,
+                                                     description=_('Transaction for order #%s') % order.id,
                                                      status=Transaction.STATUS_PROCESSING,
                                                      currency=order.currency.code,
                                                      amount=order.charge_amount,
@@ -305,7 +306,7 @@ class Stripe:
             charge = stripe.Charge.create(
                 amount=int(order.charge_amount * 100),  # 100 cents to charge $1.00
                 currency=order.currency.code.lower(),
-                description='Payment for order #%s' % (order.id),
+                description=_('Payment for order #%s') % (order.id),
                 card={
                     'number': card['number'],
                     'name': card['name'],
@@ -334,7 +335,7 @@ class Stripe:
             # The card has been declined
             body = e.json_body
             error = body['error']
-            logger.warning('Credit Card has been declined (transaction_id: %s)' % payment_txn.id, extra=error)
+            logger.warning(_('Credit Card has been declined (transaction_id: %s)') % payment_txn.id, extra=error)
 
             payment_txn.status = Transaction.STATUS_FAILED
             payment_txn.error_message = error['message']
@@ -342,10 +343,10 @@ class Stripe:
 
             raise DoorsaleError(error['message'])
         except Exception as e:
-            logger.error('Failed to process Credit Card (transaction_id: %s)' % payment_txn.id)
+            logger.error(_('Failed to process Credit Card (transaction_id: %s)') % payment_txn.id)
             logger.exception(e)
 
-            raise DoorsaleError('We failed to process your Credit Card at the moment, please try again later!')
+            raise DoorsaleError(_('We failed to process your Credit Card at the moment, please try again later!'))
 
     def refund_payment(self, **kwargs):
         """

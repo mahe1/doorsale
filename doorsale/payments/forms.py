@@ -2,6 +2,7 @@ import re
 import datetime
 
 from django import forms
+from django.utils.translation import ugettext as _
 
 from doorsale.payments.models import Gateway
 
@@ -15,22 +16,22 @@ class CreditCardForm(forms.Form):
 
     gateway = forms.ModelChoiceField(queryset=Gateway.objects.filter(is_active=True, accept_credit_card=True),
                                      empty_label=None, widget=forms.HiddenInput())
-    card_name = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'placeholder': 'Name...'}),
+    card_name = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'placeholder': _('Name...')}),
                                 error_messages={'required': 'Please specify name on credit card.'})
-    card_number = forms.CharField(max_length=24, widget=forms.TextInput(attrs={'placeholder': 'Number...'}),
-                                  error_messages={'required': 'Please specify credit card number.'})
+    card_number = forms.CharField(max_length=24, widget=forms.TextInput(attrs={'placeholder': _('Number...')}),
+                                  error_messages={'required': _('Please specify credit card number.')})
     card_type = forms.CharField(widget=forms.HiddenInput(), required=False)
     expire_date = forms.CharField(max_length=7, widget=forms.TextInput(attrs={'placeholder': 'MM / YY'}),
-                                  error_messages={'required': 'Please specify card expiry date'})
+                                  error_messages={'required': _('Please specify card expiry date')})
     cvv2 = forms.CharField(max_length=4, widget=forms.TextInput(attrs={'placeholder': 'CVV2...'}),
-                           error_messages={'required': 'Please specify card security code'})
+                           error_messages={'required': _('Please specify card security code')})
 
     def clean_card_number(self):
         card_number = self.cleaned_data['card_number'].replace(' ', '')
         try:
             int(card_number)
         except ValueError:
-            raise forms.ValidationError("Please specify correct card number.")
+            raise forms.ValidationError(_("Please specify correct card number."))
 
         return card_number
 
@@ -39,7 +40,7 @@ class CreditCardForm(forms.Form):
         card_number = self.cleaned_data.get('card_number', None)
 
         if card_number and not card_type:
-            raise forms.ValidationError('We can\'t recognize your card issuer type.')
+            raise forms.ValidationError(_('We can\'t recognize your card issuer type.'))
 
         return card_type
 
@@ -54,17 +55,17 @@ class CreditCardForm(forms.Form):
                 if expire_date > datetime.date.today():
                     return expire_date
                 else:
-                    raise forms.ValidationError("Card expiry date has already been passed.")
+                    raise forms.ValidationError(_("Card expiry date has already been passed."))
             except ValueError:
                 pass
 
-        raise forms.ValidationError("Please specify correct card expiry date.")
+        raise forms.ValidationError(_("Please specify correct card expiry date."))
 
     def clean_cvv2(self):
         cvv2 = self.cleaned_data['cvv2']
 
         if not self.REGEX_CVV2.search(cvv2):
-            raise forms.ValidationError("Please specify correct card security code.")
+            raise forms.ValidationError(_("Please specify correct card security code."))
 
         return cvv2
 

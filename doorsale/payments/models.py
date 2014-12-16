@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.core.exceptions import ValidationError
 
@@ -20,7 +21,7 @@ class CardIssuer(models.Model):
 
     class Meta:
         db_table = 'payments_card_issuer'
-        verbose_name_plural = 'Card Issuers'
+        verbose_name_plural = _('Card Issuers')
 
     def __unicode__(self):
         return self.name
@@ -37,13 +38,13 @@ class Gateway(models.Model):
            (STRIPE, 'Stripe'),
            (AMAZON_PAYMENTS, 'Amazon Payments'))
 
-    name = models.CharField(primary_key=True, max_length=10, choices=ALL, help_text='Payment processing gateway.')
-    account = models.CharField(max_length=100, help_text='Account name of gateway for reference.')
-    is_active = models.BooleanField(default=False, help_text='Gateway active for customer to buy through it.')
-    is_sandbox = models.BooleanField(default=False, help_text='Sandbox mode for testing & debugging.')
-    accept_credit_card = models.BooleanField(default=False, help_text='Process credit card payments.')
+    name = models.CharField(primary_key=True, max_length=10, choices=ALL, help_text=_('Payment processing gateway.'))
+    account = models.CharField(max_length=100, help_text=_('Account name of gateway for reference.'))
+    is_active = models.BooleanField(default=False, help_text=_('Gateway active for customer to buy through it.'))
+    is_sandbox = models.BooleanField(default=False, help_text=_('Sandbox mode for testing & debugging.'))
+    accept_credit_card = models.BooleanField(default=False, help_text=_('Process credit card payments.'))
     accept_account = models.BooleanField(default=False,
-        help_text='Process payments with customer\'s existing accounts on gateway, like PayPal account.')
+        help_text=_('Process payments with customer\'s existing accounts on gateway, like PayPal account.'))
     updated_on = models.DateTimeField(auto_now=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_by = models.CharField(max_length=100)
@@ -56,7 +57,7 @@ class Gateway(models.Model):
         if self.accept_credit_card:
             gateways = Gateway.objects.filter(accept_credit_card=True).all()
             if gateways:
-                raise ValidationError('%s is already configured to accept credit card payments.' % (gateways[0]))
+                raise ValidationError(_('%s is already configured to accept credit card payments.') % (gateways[0]))
 
     @classmethod
     def get_gateways(cls):
@@ -71,8 +72,8 @@ class GatewayParam(models.Model):
     Represents a payment processing gateway settings
     """
     gateway = models.ForeignKey(Gateway, related_name='params')
-    name = models.CharField(max_length=250, help_text='Gateway settings parameter name.')
-    value = models.CharField(max_length=500, help_text='Gateway settings parameter value.')
+    name = models.CharField(max_length=250, help_text=_('Gateway settings parameter name.'))
+    value = models.CharField(max_length=500, help_text=_('Gateway settings parameter value.'))
     updated_on = models.DateTimeField(auto_now=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_by = models.CharField(max_length=100)
@@ -80,7 +81,7 @@ class GatewayParam(models.Model):
 
     class Meta:
         db_table = 'payments_gateway_param'
-        verbose_name_plural = 'Gateway Params'
+        verbose_name_plural = _('Gateway Params')
         unique_together = ('gateway', 'name')
 
     def __unicode__(self):
@@ -96,11 +97,11 @@ class Transaction(models.Model):
     STATUS_APPROVED = 'AP'
     STATUS_FAILED = 'FA'
     STATUS_REFUNDED = 'RE'
-    STATUS_ALL = ((STATUS_PENDING, 'Pending'),
-                  (STATUS_PROCESSING, 'Processing'),
-                  (STATUS_APPROVED, 'Approved'),
-                  (STATUS_FAILED, 'Failed'),
-                  (STATUS_REFUNDED, 'Refunded'))
+    STATUS_ALL = ((STATUS_PENDING, _('Pending')),
+                  (STATUS_PROCESSING, _('Processing')),
+                  (STATUS_APPROVED, _('Approved')),
+                  (STATUS_FAILED, _('Failed')),
+                  (STATUS_REFUNDED, _('Refunded')))
 
     gateway = models.ForeignKey(Gateway)
     order = models.ForeignKey(Order)
@@ -139,14 +140,14 @@ class TransactionParam(models.Model):
     Represents payment transaction parameters
     """
     transaction = models.ForeignKey(Transaction, related_name='params')
-    name = models.CharField(max_length=100, help_text='Transaction parameter name.')
-    value = models.CharField(max_length=250, help_text='Transaction parameter value.')
+    name = models.CharField(max_length=100, help_text=_('Transaction parameter name.'))
+    value = models.CharField(max_length=250, help_text=_('Transaction parameter value.'))
     created_on = models.DateTimeField(auto_now_add=True)
     created_by = models.CharField(max_length=100)
 
     class Meta:
         db_table = 'payments_transaction_param'
-        verbose_name_plural = 'Transaction Params'
+        verbose_name_plural = _('Transaction Params')
         unique_together = ('transaction', 'name',)
 
     def __unicode__(self):

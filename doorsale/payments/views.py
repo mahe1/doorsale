@@ -3,6 +3,7 @@ from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
 
 from doorsale.exceptions import DoorsaleError
 from doorsale.sales.models import Order
@@ -51,7 +52,7 @@ def process_credit_card(request, order_id, receipt_code):
             elif gateway.name == Gateway.STRIPE:
                 processor = Stripe(gateway)
             else:
-                raise ImproperlyConfigured('%s is not supported gateway for processing credit cards.' % gateway)
+                raise ImproperlyConfigured(_('%s is not supported gateway for processing credit cards.') % gateway)
 
             try:
                 processor.credit_card_payment(data['card'], order, request.user)
@@ -83,7 +84,7 @@ def process_account_request(request, order_id, receipt_code):
                 processor = PayPal(gateway)
                 return HttpResponseRedirect(processor.create_account_payment(order, request.user))
             else:
-                raise ImproperlyConfigured('Doorsale doesn\'t yet support payment with %s account.'
+                raise ImproperlyConfigured(_('Doorsale doesn\'t yet support payment with %s account.')
                                            % gateway.get_name_display())
         except DoorsaleError as e:
             request.session['processing_error'] = e.message
@@ -117,10 +118,10 @@ def process_account_response(request, transaction_id, access_token, success):
                     return HttpResponseRedirect(reverse('sales_checkout_receipt', args=[order.id, order.receipt_code]))
                 else:
                     processor.cancel_account_payment(payment_txn, request.user)
-                    request.session['processing_message'] = 'Your order has been canceled.'
+                    request.session['processing_message'] = _('Your order has been canceled.')
                     return HttpResponseRedirect(reverse('payments_processing_message'))
             else:
-                raise ImproperlyConfigured('Doorsale doesn\'t yet support payment with %s account.'
+                raise ImproperlyConfigured(_('Doorsale doesn\'t yet support payment with %s account.')
                                            % gateway.get_name_display())
 
         except DoorsaleError as e:
@@ -137,7 +138,7 @@ class ProcessingMessageView(CatalogBaseView):
     template_name = 'payments/processing_message.html'
 
     def get(self, request):
-        breadcrumbs = ({'name': 'Processing Status', 'url': reverse('payments_processing_message')},)
+        breadcrumbs = ({'name': _('Processing Status'), 'url': reverse('payments_processing_message')},)
 
         if 'processing_error' in request.session:
             return super(ProcessingMessageView, self).get(
