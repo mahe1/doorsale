@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django.template import Context
 from django.template.loader import get_template
 from django.shortcuts import render, get_object_or_404
+from django.utils.translation import ugettext as _
 
 from doorsale.geo.models import Address
 from doorsale.sales.models import Cart, Order, PaymentMethod
@@ -40,7 +41,7 @@ def add_to_cart(request):
         else:
             raise ValueError()
     except ValueError:
-        return HttpResponseBadRequest('Product quantity is not correct, please enter one or more products in numbers.')
+        return HttpResponseBadRequest(_('Product quantity is not correct, please enter one or more products in numbers.'))
 
     if request.is_ajax():
         default_currency = get_default_currency(request)
@@ -142,11 +143,11 @@ class CheckoutCartView(CheckoutBaseView):
                 quantity = int(request.POST['quantity'])
                 if quantity > 0:
                     cart.update_item(product_id, quantity)
-                    message = 'Your shopping cart has been updated.'
+                    message = _('Your shopping cart has been updated.')
                 else:
                     raise ValueError()
             except ValueError:
-                error = 'Product quantity is not correct, please enter one or more products in numbers.'
+                error = _('Product quantity is not correct, please enter one or more products in numbers.')
 
         else:
             cart = Cart()
@@ -301,7 +302,7 @@ class CheckoutPaymentView(CheckoutBaseView):
                     request.session['payment_method'] = payment_method
                     return HttpResponseRedirect(reverse('sales_checkout_order'))
                 else:
-                    error = 'Please provide purchase order number.'
+                    error = _('Please provide purchase order number.')
             else:
                 if 'po_number' in request.session:
                     del request.session['po_number']
@@ -309,7 +310,7 @@ class CheckoutPaymentView(CheckoutBaseView):
                 request.session['payment_method'] = payment_method
                 return HttpResponseRedirect(reverse('sales_checkout_order'))
         else:
-            error = 'Please select payment method'
+            error = _('Please select payment method')
 
         return super(CheckoutPaymentView, self).get(request, error=error, payment_method=payment_method)
 

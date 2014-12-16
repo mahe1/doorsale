@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.conf import settings
 from django.utils.crypto import get_random_string
+from django.utils.translation import ugettext_lazy as _
 
 from doorsale.geo.models import Address
 from doorsale.catalog.models import Product
@@ -142,7 +143,7 @@ class CartItem(models.Model):
     class Meta:
         db_table = 'sales_cart_item'
         ordering = ('id',)
-        verbose_name_plural = 'Cart Items'
+        verbose_name_plural = _('Cart Items')
         unique_together = ('cart', 'product',)
 
     def get_sub_total(self):
@@ -187,10 +188,10 @@ class PaymentMethod(models.Model):
     CHECK = 'CH'
     CREDIT_CARD = 'CC'
     PURCHASE_ORDER = 'PO'
-    ALL = ((COD, 'Cash On Delivery'),
-           (CHECK, 'Check / Money Order'),
-           (CREDIT_CARD, 'Credit Card'),
-           (PURCHASE_ORDER, 'Purchase Order'))
+    ALL = ((COD, _('Cash On Delivery')),
+           (CHECK, _('Check / Money Order')),
+           (CREDIT_CARD, _('Credit Card')),
+           (PURCHASE_ORDER, _('Purchase Order')))
     ALL_METHODS = dict(ALL)
 
     code = models.CharField(primary_key=True, max_length=2, choices=ALL)
@@ -203,7 +204,7 @@ class PaymentMethod(models.Model):
 
     class Meta:
         db_table = 'sales_payment_method'
-        verbose_name_plural = 'Payment Methods'
+        verbose_name_plural = _('Payment Methods')
 
     def __unicode__(self):
         return '%s: %s' % (self.code, self.name)
@@ -273,10 +274,10 @@ class Order(models.Model):
     ORDER_PROCESSING = 'PR'
     ORDER_COMPLETE = 'CO'
     ORDER_CANCELLED = 'CA'
-    ORDER_STATUSES = ((ORDER_PENDING, 'Pending'),
-                      (ORDER_PROCESSING, 'Processing'),
-                      (ORDER_COMPLETE, 'Complete'),
-                      (ORDER_CANCELLED, 'Cancelled'))
+    ORDER_STATUSES = ((ORDER_PENDING, _('Pending')),
+                      (ORDER_PROCESSING, _('Processing')),
+                      (ORDER_COMPLETE, _('Complete')),
+                      (ORDER_CANCELLED, _('Cancelled')))
 
     # Payment statuses
     PAYMENT_PENDING = 'PE'
@@ -285,12 +286,12 @@ class Order(models.Model):
     PAYMENT_PARTIALLY_REFUNDED = 'PR'
     PAYMENT_REFUNDED = 'RE'
     PAYMENT_VOID = 'VO'
-    PAYMENT_STATUSES = ((PAYMENT_PENDING, 'Pending'),
-                        (PAYMENT_AUTHORIZED, 'Authorized'),
-                        (PAYMENT_PAID, 'Paid'),
-                        (PAYMENT_PARTIALLY_REFUNDED, 'Partially Refunded'),
-                        (PAYMENT_REFUNDED, 'Refunded'),
-                        (PAYMENT_VOID, 'Void'))
+    PAYMENT_STATUSES = ((PAYMENT_PENDING, _('Pending')),
+                        (PAYMENT_AUTHORIZED, _('Authorized')),
+                        (PAYMENT_PAID, _('Paid')),
+                        (PAYMENT_PARTIALLY_REFUNDED, _('Partially Refunded')),
+                        (PAYMENT_REFUNDED, _('Refunded')),
+                        (PAYMENT_VOID, _('Void')))
 
     # Shipping statuses
     SHIPPING_NOT_REQUIRED = 'NR'
@@ -298,11 +299,11 @@ class Order(models.Model):
     SHIPPING_PARTIALLY_SHIPPED = 'PS'
     SHIPPING_SHIPPED = 'SH'
     SHIPPING_DELIVERED = 'DE'
-    SHIPPING_STATUSES = ((SHIPPING_NOT_REQUIRED, 'Not Required'),
-                         (SHIPPING_PENDING, 'Pending'),
-                         (SHIPPING_PARTIALLY_SHIPPED, 'Partially Shipped'),
-                         (SHIPPING_SHIPPED, 'Shipped'),
-                         (SHIPPING_DELIVERED, 'Delivered'))
+    SHIPPING_STATUSES = ((SHIPPING_NOT_REQUIRED, _('Not Required')),
+                         (SHIPPING_PENDING, _('Pending')),
+                         (SHIPPING_PARTIALLY_SHIPPED, _('Partially Shipped')),
+                         (SHIPPING_SHIPPED, _('Shipped')),
+                         (SHIPPING_DELIVERED, _('Delivered')))
 
     # Referencing custom defined model in settings file
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
@@ -314,16 +315,16 @@ class Order(models.Model):
     refunded_amount = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
     exchange_rate = models.FloatField(default=1)
     charge_amount = models.DecimalField(max_digits=9, decimal_places=2,
-                                        help_text='Order total amount in user prefered currency that has been charged.')
+                                        help_text=_('Order total amount in user prefered currency that has been charged.'))
     order_status = models.CharField(max_length=2, choices=ORDER_STATUSES)
     payment_method = models.ForeignKey(PaymentMethod, db_column='payment_method_code')
     payment_status = models.CharField(max_length=2, choices=PAYMENT_STATUSES)
     po_number = models.CharField(max_length=100, null=True, blank=True,
-                                 help_text='Purchase Order number')
+                                 help_text=_('Purchase Order number'))
     shipping_status = models.CharField(max_length=2, choices=SHIPPING_STATUSES)
     billing_address = models.ForeignKey(Address, related_name='billing_orders')
     shipping_address = models.ForeignKey(Address, related_name='shipping_orders', null=True, blank=True)
-    receipt_code = models.CharField(max_length=100, help_text="Random code generate for each order for secure access.")
+    receipt_code = models.CharField(max_length=100, help_text=_("Random code generate for each order for secure access."))
     updated_on = models.DateTimeField(auto_now=True)
     updated_by = models.CharField(max_length=100)
     created_on = models.DateTimeField(auto_now_add=True)
@@ -350,7 +351,7 @@ class OrderItem(models.Model):
     """
     order = models.ForeignKey(Order, related_name='items')
     product = models.ForeignKey('catalog.Product')
-    price = models.DecimalField(max_digits=9, decimal_places=2, help_text='Unit price of the product')
+    price = models.DecimalField(max_digits=9, decimal_places=2, help_text=_('Unit price of the product'))
     quantity = models.IntegerField()
     taxes = models.DecimalField(max_digits=9, decimal_places=2)
     sub_total = models.DecimalField(max_digits=9, decimal_places=2)
@@ -364,4 +365,4 @@ class OrderItem(models.Model):
 
     class Meta:
         db_table = 'sales_order_item'
-        verbose_name_plural = 'Order Items'
+        verbose_name_plural = _('Order Items')
